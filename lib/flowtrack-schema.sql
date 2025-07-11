@@ -40,13 +40,13 @@ CREATE INDEX idx_habit_uuid ON habit(uuid);                 -- Speeds up: habit 
 -- Categories with Crypto.randomUUID() generated UUIDs
 INSERT INTO category (uuid, name, icon) VALUES
 ('a1b2c3d4-e5f6-7890-1234-567890abcdef', 'Health', 'heart'),
-('b2c3d4e5-f6g7-8901-2345-678901bcdefg', 'Productivity', 'flash'),
-('c3d4e5f6-g7h8-9012-3456-789012cdefgh', 'Exercise', 'fitness'),
+('b2c3d4e5-f6g7-8901-2345-678901bcdefg', 'Productivity', 'bolt'),
+('c3d4e5f6-g7h8-9012-3456-789012cdefgh', 'Exercise', 'dumbbell'),
 ('d4e5f6g7-h8i9-0123-4567-890123defghi', 'Learning', 'book'),
 ('e5f6g7h8-i9j0-1234-5678-901234efghij', 'Finance', 'dollar-sign'),
 ('f6g7h8i9-j0k1-2345-6789-012345fghijk', 'Home', 'home'),
-('g7h8i9j0-k1l2-3456-7890-123456ghijkl', 'Social', 'people'),
-('h8i9j0k1-l2m3-4567-8901-234567hijklm', 'Creativity', 'color-palette');
+('g7h8i9j0-k1l2-3456-7890-123456ghijkl', 'Social', 'users'),
+('h8i9j0k1-l2m3-4567-8901-234567hijklm', 'Creativity', 'palette');
 
 -- Habits with Crypto.randomUUID() generated UUIDs
 INSERT INTO habit (uuid, title, description, target_value, target_unit, active_days, reminder_time, is_active, due_date, category_uuid) VALUES

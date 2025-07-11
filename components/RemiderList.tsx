@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +11,6 @@ interface Props {
 	variant?: 'reminder' | 'habit';
 	title?: string;
 	cardsQty?: number;
-	onShowAllPress?: () => void;
 	autoRefresh?: boolean;
 	refreshInterval?: number;
 }
@@ -20,7 +20,6 @@ export default function RemindersList({
 	variant = 'reminder',
 	title = 'Next Reminders',
 	cardsQty = 5,
-	onShowAllPress,
 	autoRefresh = true,
 	refreshInterval = 60000
 }: Props) {
@@ -44,12 +43,13 @@ export default function RemindersList({
 	const renderHeader = () => (
 		<View style={styles.listHeader}>
 			<Text style={styles.listTitle}>{title}</Text>
-			{reminders.length > 3 && (
-				<Pressable
-					onPress={onShowAllPress}
-					style={({ pressed }) => [styles.showAllButton, pressed && styles.showAllButtonPressed]}>
-					<Text style={styles.showAllText}>See all</Text>
-				</Pressable>
+			{reminders.length >= cardsQty && (
+				<Link href='/habits' asChild>
+					<Pressable
+						style={({ pressed }) => [styles.showAllButton, pressed && styles.showAllButtonPressed]}>
+						<Text style={styles.showAllText}>See all habits</Text>
+					</Pressable>
+				</Link>
 			)}
 		</View>
 	);

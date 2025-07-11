@@ -1,11 +1,12 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { parseHabitReminders, prepareRemindersForDisplay } from '@/lib/helpers';
 import { nextRemindersQuery } from '@/lib/queries';
-import { HabitReminderDisplay } from '@/lib/types';
+import { DisplayReminder } from '@/lib/types';
+import { useAsyncState } from './useAsyncState';
 
 interface UseRemindersOptions {
 	autoRefreshInterval?: number;
@@ -14,11 +15,14 @@ interface UseRemindersOptions {
 }
 
 export default function useReminders(qty: number, options: UseRemindersOptions = {}) {
-	const [nextReminders, setNextReminders] = useState<HabitReminderDisplay[]>(
-		[] as HabitReminderDisplay[]
-	);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const {
+		data: nextReminders,
+		loading,
+		error,
+		runAsync,
+		setData: setNextReminders
+	} = useAsyncState<DisplayReminder[]>([]);
+
 	const db = useSQLiteContext();
 
 	const appState = useRef(AppState.currentState);
@@ -32,19 +36,13 @@ export default function useReminders(qty: number, options: UseRemindersOptions =
 	} = options;
 
 	const fastLoad = useCallback(async () => {
-		try {
-			setLoading(true);
-			setError(null);
-
+		return runAsync(async () => {
 			const results = await nextRemindersQuery(db, qty);
-
-			setNextReminders(prepareRemindersForDisplay(parseHabitReminders(results)));
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Error loading reminders');
-		} finally {
-			setLoading(false);
-		}
-	}, [db, qty]);
+			const reminders = prepareRemindersForDisplay(parseHabitReminders(results));
+			setNextReminders(reminders);
+			return reminders;
+		});
+	}, [db, qty, runAsync, setNextReminders]);
 
 	const loadReminders = useDebouncedCallback(fastLoad, 300, {
 		leading: false,

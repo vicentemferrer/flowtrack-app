@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import useReminders from '@/hooks/useReminders';
-import { HabitReminderDisplay } from '@/lib/types';
+import { DisplayReminder } from '@/lib/types';
 import ReminderCard from './ReminderCard';
 
 interface Props {
@@ -36,7 +36,7 @@ export default function RemindersList({
 		setRefreshing(false);
 	};
 
-	const renderReminderCard = ({ item }: { item: HabitReminderDisplay }) => (
+	const renderReminderCard = ({ item }: { item: DisplayReminder }) => (
 		<ReminderCard reminder={item} onPress={onReminderPress} variant={variant} />
 	);
 

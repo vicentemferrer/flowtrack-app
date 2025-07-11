@@ -27,7 +27,7 @@ export interface UpdateCategoryInput {
 
 // ===== HABIT TYPES =====
 
-export interface Habit {
+export interface RawHabit {
 	id: number;
 	uuid: UUID;
 	title: string;
@@ -42,9 +42,24 @@ export interface Habit {
 	category_uuid: UUID | null;
 }
 
-export interface HabitParsed extends Omit<Habit, 'active_days' | 'is_active'> {
+export interface HabitParsed extends Omit<RawHabit, 'active_days' | 'is_active'> {
 	active_days: ActiveDays;
 	is_active: boolean;
+}
+
+export interface RawHabitWithCategory extends RawHabit {
+	category_name: string | null;
+	category_icon: string | null;
+	category_uuid: UUID | null;
+}
+
+export interface HabitWithCategoryParsed extends Omit<HabitParsed, 'category_uuid'> {
+	category?: Omit<Category, 'id'> | null;
+}
+
+export interface HabitsByCategory {
+	category: Omit<Category, 'id'>;
+	habits: HabitWithCategoryParsed[];
 }
 
 export interface CreateHabitInput {
@@ -93,16 +108,6 @@ export interface DailyReminder {
 	category_icon: string | null;
 }
 
-// ===== COMBINED TYPES =====
-
-export interface HabitWithCategory extends HabitParsed {
-	category: Category | null;
-}
-
-export interface CategoryWithHabits extends Category {
-	habits: HabitParsed[];
-}
-
 // ===== ENUMS =====
 
 export enum DayOfWeek {
@@ -149,7 +154,7 @@ export enum CategoryIcon {
 
 export type ParseActiveDays = (activeDaysJSON: ActiveDaysJSON) => ActiveDays;
 export type StringifyActiveDays = (activeDays: ActiveDays) => ActiveDaysJSON;
-export type IsHabitActiveToday = (habit: Habit | HabitParsed) => boolean;
+export type IsHabitActiveToday = (habit: RawHabit | HabitParsed) => boolean;
 export type SqliteToBoolean = (value: number) => boolean;
 export type BooleanToSqlite = (value: boolean) => number;
 
@@ -157,7 +162,7 @@ export type BooleanToSqlite = (value: boolean) => number;
 
 export type ScheduleType = 'today' | 'tomorrow' | 'later';
 
-export interface HabitReminderResult {
+export interface RawReminder {
 	uuid: UUID;
 	title: string;
 	description: string | null;
@@ -173,7 +178,7 @@ export interface HabitReminderResult {
 	display_time: TimeString;
 }
 
-export interface HabitReminderParsed {
+export interface ReminderParsed {
 	uuid: UUID;
 	title: string;
 	description?: string;
@@ -193,7 +198,7 @@ export interface HabitReminderParsed {
 	displayTime: TimeString;
 }
 
-export interface HabitReminderDisplay {
+export interface DisplayReminder {
 	uuid: UUID;
 	title: string;
 	description?: string;

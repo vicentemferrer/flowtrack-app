@@ -1,26 +1,121 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+import { useDebouncedCallback } from 'use-debounce';
 
-import { errorHandlerAsync } from '@/lib/errorHandler';
 import { parseHabitReminders, prepareRemindersForDisplay } from '@/lib/helpers';
 import { nextRemindersQuery } from '@/lib/queries';
 import { HabitReminderDisplay } from '@/lib/types';
 
-export default function useReminders(qty: number) {
-	const db = useSQLiteContext();
+interface UseRemindersOptions {
+	autoRefreshInterval?: number;
+	refreshOnAppFocus?: boolean;
+	refreshOnDateChange?: boolean;
+}
+
+export default function useReminders(qty: number, options: UseRemindersOptions = {}) {
 	const [nextReminders, setNextReminders] = useState<HabitReminderDisplay[]>(
 		[] as HabitReminderDisplay[]
 	);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const db = useSQLiteContext();
 
-	useEffect(() => {
-		async function getNextReminders() {
-			const results = await errorHandlerAsync(nextRemindersQuery.bind(null, db, qty));
+	const appState = useRef(AppState.currentState);
+	const intervalRef = useRef<NodeJS.Timeout | number | null>(null);
+	const lastDateRef = useRef(new Date().toDateString());
+
+	const {
+		autoRefreshInterval = 60000,
+		refreshOnAppFocus = true,
+		refreshOnDateChange = true
+	} = options;
+
+	const fastLoad = useCallback(async () => {
+		try {
+			setLoading(true);
+			setError(null);
+
+			const results = await nextRemindersQuery(db, qty);
 
 			setNextReminders(prepareRemindersForDisplay(parseHabitReminders(results)));
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Error loading reminders');
+		} finally {
+			setLoading(false);
 		}
-
-		getNextReminders();
 	}, [db, qty]);
 
-	return { reminders: nextReminders };
+	const loadReminders = useDebouncedCallback(fastLoad, 300, {
+		leading: false,
+		trailing: true
+	});
+
+	const refreshReminders = useCallback(() => {
+		loadReminders.flush();
+	}, [loadReminders]);
+
+	const checkDateChange = () => {
+		const currentDate = new Date().toDateString();
+		if (refreshOnDateChange && currentDate !== lastDateRef.current) {
+			lastDateRef.current = currentDate;
+			loadReminders();
+		}
+	};
+
+	useEffect(() => {
+		fastLoad();
+	}, [fastLoad]);
+
+	useEffect(() => {
+		return () => {
+			loadReminders.cancel();
+		};
+	}, [loadReminders]);
+
+	useEffect(() => {
+		if (!refreshOnAppFocus) return;
+
+		const handleAppStateChange = (nextAppState: AppStateStatus) => {
+			if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+				checkDateChange();
+				loadReminders.flush();
+			}
+			appState.current = nextAppState;
+		};
+
+		const subscription = AppState.addEventListener('change', handleAppStateChange);
+		return () => subscription?.remove();
+	}, [refreshOnAppFocus, loadReminders]);
+
+	useEffect(() => {
+		if (autoRefreshInterval <= 0) return;
+
+		intervalRef.current = setInterval(() => {
+			checkDateChange();
+			loadReminders();
+		}, autoRefreshInterval);
+
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+			}
+		};
+	}, [autoRefreshInterval, loadReminders]);
+
+	useEffect(() => {
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+			}
+		};
+	}, []);
+
+	return {
+		reminders: nextReminders,
+		loading,
+		error,
+		refreshReminders,
+		isAutoRefreshing: intervalRef.current !== null
+	};
 }

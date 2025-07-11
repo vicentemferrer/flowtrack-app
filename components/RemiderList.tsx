@@ -1,4 +1,5 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import useReminders from '@/hooks/useReminders';
 import { HabitReminderDisplay } from '@/lib/types';
@@ -10,6 +11,8 @@ interface Props {
 	title?: string;
 	cardsQty?: number;
 	onShowAllPress?: () => void;
+	autoRefresh?: boolean;
+	refreshInterval?: number;
 }
 
 export default function RemindersList({
@@ -17,9 +20,22 @@ export default function RemindersList({
 	variant = 'reminder',
 	title = 'Next Reminders',
 	cardsQty = 5,
-	onShowAllPress
+	onShowAllPress,
+	autoRefresh = true,
+	refreshInterval = 60000
 }: Props) {
-	const { reminders } = useReminders(cardsQty);
+	const { reminders, refreshReminders } = useReminders(cardsQty, {
+		autoRefreshInterval: autoRefresh ? refreshInterval : 0,
+		refreshOnAppFocus: true,
+		refreshOnDateChange: true
+	});
+	const [refreshing, setRefreshing] = useState(false);
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+		await refreshReminders();
+		setRefreshing(false);
+	};
 
 	const renderReminderCard = ({ item }: { item: HabitReminderDisplay }) => (
 		<ReminderCard reminder={item} onPress={onReminderPress} variant={variant} />
@@ -63,6 +79,17 @@ export default function RemindersList({
 				renderItem={renderReminderCard}
 				keyExtractor={(item) => item.uuid}
 				contentContainerStyle={styles.listContainer}
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={handleRefresh}
+						colors={['#3A5BA0']}
+						tintColor='#3A5BA0'
+						title='Pull to refresh'
+						titleColor='#666666'
+					/>
+				}
+				showsVerticalScrollIndicator={false}
 			/>
 		</View>
 	);
@@ -101,6 +128,7 @@ const styles = StyleSheet.create({
 	},
 
 	listContainer: {
+		paddingBottom: 150,
 		gap: 12
 	},
 

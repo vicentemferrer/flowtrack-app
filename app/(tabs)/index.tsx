@@ -1,9 +1,12 @@
-import RemindersList from '@/components/RemiderList';
 import { StyleSheet, View } from 'react-native';
+
+import Header from '@/components/Header';
+import RemindersList from '@/components/RemiderList';
 
 export default function Index() {
 	return (
 		<View style={styles.container}>
+			<Header />
 			<RemindersList />
 		</View>
 	);

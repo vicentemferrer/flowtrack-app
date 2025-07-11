@@ -1,6 +1,7 @@
 export function errorHandlerSync(fn: () => any, message: string | null = null) {
 	try {
-		fn();
+		const results = fn();
+		return results;
 	} catch (err) {
 		if (err instanceof Error) {
 			const advice = message ?? 'Error';
@@ -12,7 +13,8 @@ export function errorHandlerSync(fn: () => any, message: string | null = null) {
 
 export async function errorHandlerAsync(fn: () => any, message: string | null = null) {
 	try {
-		await fn();
+		const results = await fn();
+		return results;
 	} catch (err) {
 		if (err instanceof Error) {
 			const advice = message ?? 'Error';

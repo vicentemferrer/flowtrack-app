@@ -1,10 +1,9 @@
-import RemindersList from '@/components/RemiderList';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-export default function Index() {
+export default function HabitsScreen() {
 	return (
 		<View style={styles.container}>
-			<RemindersList />
+			<Text>Habits</Text>
 		</View>
 	);
 }

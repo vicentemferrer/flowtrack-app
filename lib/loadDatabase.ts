@@ -18,7 +18,7 @@ export async function loadDatabase(dbName: string) {
 
 	if (!fileInfo.exists && isDev) {
 		await errorHandlerAsync(loadInDevelopment.bind(null, dbName, targetPath), 'Error in DB copy');
-	} else {
+	} else if (!isDev) {
 		console.log('✔️ Database already created.');
 		await errorHandlerAsync(loadInProduction.bind(null, dbName), 'Error in DB scaffold');
 	}

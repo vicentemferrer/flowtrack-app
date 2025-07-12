@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 
 import CategoryDropdown from '@/components/CategoryDropdown';
 import InsetView from '@/components/core/InsetView';
+import FloatingActionButton from '@/components/FloatingActionButton';
 import InactiveHabitsDropdown from '@/components/InactiveHabitsDropdown';
 import useHabits from '@/hooks/useHabits';
 
@@ -98,6 +99,7 @@ export default function HabitsScreen() {
 					</>
 				)}
 			</ScrollView>
+			<FloatingActionButton href='/create-habit' />
 		</InsetView>
 	);
 }

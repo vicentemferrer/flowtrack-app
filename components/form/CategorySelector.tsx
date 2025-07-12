@@ -4,7 +4,7 @@ import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from
 
 import { CategoryOption } from '@/lib/types';
 
-interface CategorySelectorProps {
+interface Props {
 	categories: CategoryOption[];
 	selectedCategory: CategoryOption | null;
 	onSelect: (category: CategoryOption | null) => void;
@@ -20,7 +20,7 @@ export default function CategorySelector({
 	onSelect,
 	error,
 	placeholder = 'Select a category'
-}: CategorySelectorProps) {
+}: Props) {
 	const [isVisible, setIsVisible] = useState(false);
 
 	const handleSelect = (category: CategoryOption | null) => {

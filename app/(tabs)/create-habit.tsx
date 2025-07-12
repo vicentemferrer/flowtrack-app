@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -12,12 +13,10 @@ import {
 	TextInput,
 	View
 } from 'react-native';
-import DatePicker from 'react-native-modern-datepicker';
-import TimePicker from 'react-native-time-picker';
-import WeekDayPicker from 'react-native-weekday-picker';
 
 import InsetView from '@/components/core/InsetView';
 import CategorySelector from '@/components/form/CategorySelector';
+import WeekDayPicker from '@/components/form/WeekDayPicker';
 import useHabitCreation from '@/hooks/useHabitCreation';
 import { ActiveDays, HabitFormData } from '@/lib/types';
 
@@ -73,19 +72,25 @@ export default function CreateHabitScreen() {
 		handleInputChange('active_days', days as ActiveDays);
 	};
 
-	const handleTimeChange = (time: { hour: number; minute: number }) => {
-		const timeString = `${time.hour.toString().padStart(2, '0')}:${time.minute
-			.toString()
-			.padStart(2, '0')}`;
-		handleInputChange('reminder_time', timeString);
+	const handleTimeChange = (event: any, selectedDate?: Date) => {
 		setShowTimePicker(false);
+		if (selectedDate) {
+			const hours = selectedDate.getHours().toString().padStart(2, '0');
+			const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+			const timeString = `${hours}:${minutes}`;
+			handleInputChange('reminder_time', timeString);
+		}
 	};
 
-	const handleDateChange = (dateString: string) => {
-		// Convert from picker format (YYYY/MM/DD) to ISO format
-		const formattedDate = dateString.replace(/\//g, '-');
-		handleInputChange('due_date', formattedDate);
+	const handleDateChange = (event: any, selectedDate?: Date) => {
 		setShowDatePicker(false);
+		if (selectedDate) {
+			const year = selectedDate.getFullYear();
+			const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+			const day = selectedDate.getDate().toString().padStart(2, '0');
+			const dateString = `${year}-${month}-${day}`;
+			handleInputChange('due_date', dateString);
+		}
 	};
 
 	const handleSubmit = async () => {
@@ -114,13 +119,30 @@ export default function CreateHabitScreen() {
 		router.back();
 	};
 
-	// Get today's date in the picker format
-	const getTodayDate = () => {
+	// Get current time for time picker
+	const getCurrentTime = () => {
+		const now = new Date();
+		if (formData.reminder_time) {
+			const [hours, minutes] = formData.reminder_time.split(':');
+			now.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+		}
+		return now;
+	};
+
+	// Get current date for date picker
+	const getCurrentDate = () => {
+		const now = new Date();
+		if (formData.due_date) {
+			return new Date(formData.due_date);
+		}
+		return now;
+	};
+
+	// Get minimum date (today)
+	const getMinimumDate = () => {
 		const today = new Date();
-		const year = today.getFullYear();
-		const month = (today.getMonth() + 1).toString().padStart(2, '0');
-		const day = today.getDate().toString().padStart(2, '0');
-		return `${year}/${month}/${day}`;
+		today.setHours(0, 0, 0, 0);
+		return today;
 	};
 
 	return (
@@ -229,10 +251,6 @@ export default function CreateHabitScreen() {
 							<WeekDayPicker
 								selectedDays={formData.active_days}
 								onDaysChange={handleActiveDaysChange}
-								weekdayStyle={styles.weekdayStyle}
-								selectedWeekdayStyle={styles.selectedWeekdayStyle}
-								weekdayTextStyle={styles.weekdayTextStyle}
-								selectedWeekdayTextStyle={styles.selectedWeekdayTextStyle}
 							/>
 						</View>
 					</View>
@@ -280,40 +298,24 @@ export default function CreateHabitScreen() {
 					</View>
 				</ScrollView>
 
-				{/* Time Picker Modal */}
+				{/* Time Picker */}
 				{showTimePicker && (
-					<View style={styles.modalOverlay}>
-						<View style={styles.modalContent}>
-							<View style={styles.modalHeader}>
-								<Text style={styles.modalTitle}>Select Time</Text>
-								<Pressable onPress={() => setShowTimePicker(false)}>
-									<Ionicons name='close' size={24} color='#666666' />
-								</Pressable>
-							</View>
-							<TimePicker onTimeSelected={handleTimeChange} is24Hour={false} />
-						</View>
-					</View>
+					<DateTimePicker
+						value={getCurrentTime()}
+						mode='time'
+						is24Hour={false}
+						onChange={handleTimeChange}
+					/>
 				)}
 
-				{/* Date Picker Modal */}
+				{/* Date Picker */}
 				{showDatePicker && (
-					<View style={styles.modalOverlay}>
-						<View style={styles.modalContent}>
-							<View style={styles.modalHeader}>
-								<Text style={styles.modalTitle}>Select Due Date</Text>
-								<Pressable onPress={() => setShowDatePicker(false)}>
-									<Ionicons name='close' size={24} color='#666666' />
-								</Pressable>
-							</View>
-							<DatePicker
-								onDateChange={handleDateChange}
-								current={getTodayDate()}
-								minimum={getTodayDate()}
-								mode='calendar'
-								style={styles.datePicker}
-							/>
-						</View>
-					</View>
+					<DateTimePicker
+						value={getCurrentDate()}
+						mode='date'
+						minimumDate={getMinimumDate()}
+						onChange={handleDateChange}
+					/>
 				)}
 			</KeyboardAvoidingView>
 		</InsetView>
@@ -409,24 +411,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		paddingVertical: 8
 	},
-	weekdayStyle: {
-		backgroundColor: '#F5F5F5',
-		borderRadius: 8,
-		width: 40,
-		height: 40,
-		marginHorizontal: 4
-	},
-	selectedWeekdayStyle: {
-		backgroundColor: '#3A5BA0'
-	},
-	weekdayTextStyle: {
-		color: '#666666',
-		fontSize: 14,
-		fontWeight: '500'
-	},
-	selectedWeekdayTextStyle: {
-		color: '#FFFFFF'
-	},
 	timeButton: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -453,44 +437,5 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: '#E53E3E',
 		fontWeight: '500'
-	},
-	modalOverlay: {
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	modalContent: {
-		backgroundColor: '#FFFFFF',
-		borderRadius: 12,
-		width: '90%',
-		maxHeight: '80%',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.25,
-		shadowRadius: 8,
-		elevation: 5
-	},
-	modalHeader: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingHorizontal: 20,
-		paddingVertical: 16,
-		borderBottomWidth: 1,
-		borderBottomColor: '#F0F0F0'
-	},
-	modalTitle: {
-		fontSize: 18,
-		fontWeight: '600',
-		color: '#3A5BA0'
-	},
-	datePicker: {
-		paddingHorizontal: 20,
-		paddingVertical: 16
 	}
 });

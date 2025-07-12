@@ -16,6 +16,13 @@ export default function RootLayout() {
 							headerShown: false
 						}}
 					/>
+					<Stack.Screen
+						name='edit-habit'
+						options={{
+							presentation: 'modal',
+							headerShown: false
+						}}
+					/>
 				</Stack>
 			</DBProvider>
 		</SafeAreaProvider>

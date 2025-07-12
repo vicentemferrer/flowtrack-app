@@ -3,16 +3,22 @@ import { useEffect, useState } from 'react';
 
 import useHabitDelete from '@/hooks/useHabitDelete';
 import useHabitDetails from '@/hooks/useHabitDetails';
+import { Alert } from 'react-native';
 import HabitDetailsModal from './HabitDetailsModal';
 
 interface Props {
 	habitUuid: string | null;
 	visible: boolean;
 	onClose: () => void;
-	onDelete?: (habitUuid: string) => void;
+	refreshHabits: () => Promise<void>;
 }
 
-export default function HabitDetailsContainer({ habitUuid, visible, onClose, onDelete }: Props) {
+export default function HabitDetailsContainer({
+	habitUuid,
+	visible,
+	onClose,
+	refreshHabits
+}: Props) {
 	const { habit, loading, error, loadHabitDetails } = useHabitDetails();
 	const { deleting, error: deleteError, deleteHabit } = useHabitDelete();
 	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -36,12 +42,29 @@ export default function HabitDetailsContainer({ habitUuid, visible, onClose, onD
 		onClose();
 	};
 
-	const handleDelete = async (habitUuid: string) => {
-		const success = await deleteHabit(habitUuid);
-		if (success) {
-			onDelete?.(habitUuid);
-			onClose();
-		}
+	const handleDelete = (habitUuid: string) => {
+		Alert.alert(
+			'Delete Habit',
+			'Are you sure you want to delete this habit? This action cannot be undone.',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel'
+				},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: async () => {
+						const success = await deleteHabit(habitUuid);
+						if (success) {
+							await refreshHabits();
+						} else {
+							Alert.alert('Error', 'Failed to delete habit');
+						}
+					}
+				}
+			]
+		);
 	};
 
 	if (loading || deleting || error || deleteError || !habit) {

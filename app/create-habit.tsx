@@ -109,7 +109,7 @@ export default function CreateHabitScreen() {
 			Alert.alert('Success', 'Habit created successfully!', [
 				{
 					text: 'OK',
-					onPress: () => router.back()
+					onPress: () => router.replace('/habits')
 				}
 			]);
 		} else if (error) {

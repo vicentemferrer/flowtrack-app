@@ -140,7 +140,7 @@ export default function EditHabitScreen() {
 			Alert.alert('Success', 'Habit updated successfully!', [
 				{
 					text: 'OK',
-					onPress: () => router.back()
+					onPress: () => router.replace('/habits')
 				}
 			]);
 		} else if (error) {

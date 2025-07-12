@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CategoryDropdown from '@/components/CategoryDropdown';
@@ -30,16 +31,6 @@ export default function HabitsScreen() {
 		setSelectedHabitUuid(null);
 	};
 
-	const handleEditHabit = (habitUuid: string) => {
-		// TODO: Implementar navegación a editar hábito
-		console.log('Edit habit:', habitUuid);
-	};
-
-	const handleDeleteHabit = (habitUuid: string) => {
-		// TODO: Implementar eliminación de hábito
-		console.log('Delete habit:', habitUuid);
-	};
-
 	const handleCategorySeeAll = (categoryUuid: string) => {
 		// TODO: Implementar filtros para mostrar todos los hábitos de la categoría
 		console.log('Category see all:', categoryUuid);
@@ -49,6 +40,12 @@ export default function HabitsScreen() {
 		// TODO: Implementar filtros para mostrar todos los hábitos inactivos
 		console.log('Inactive see all');
 	};
+
+	useFocusEffect(
+		useCallback(() => {
+			refreshHabits();
+		}, [refreshHabits])
+	);
 
 	if (error) {
 		return (
@@ -124,8 +121,7 @@ export default function HabitsScreen() {
 				habitUuid={selectedHabitUuid}
 				visible={detailsModalVisible}
 				onClose={handleCloseDetails}
-				onEdit={handleEditHabit}
-				onDelete={handleDeleteHabit}
+				refreshHabits={refreshHabits}
 			/>
 		</InsetView>
 	);

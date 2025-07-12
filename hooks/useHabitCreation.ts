@@ -2,8 +2,9 @@ import * as Crypto from 'expo-crypto';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useState } from 'react';
 
+import { createHabitQuery } from '@/lib/habitCUD';
 import { stringifyActiveDays } from '@/lib/helpers';
-import { createHabitQuery, getAllCategoriesQuery } from '@/lib/queries';
+import { getAllCategoriesQuery } from '@/lib/queries';
 import { CategoryOption, HabitFormData, HabitFormErrors } from '@/lib/types';
 import { useAsyncState } from './useAsyncState';
 

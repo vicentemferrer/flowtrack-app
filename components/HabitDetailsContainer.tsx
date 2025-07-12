@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import useHabitDetails from '@/hooks/useHabitDetails';
@@ -29,7 +30,6 @@ export default function HabitDetailsContainer({
 		}
 	}, [visible, habitUuid, hasLoadedOnce, loadHabitDetails]);
 
-	// Reset when modal closes
 	useEffect(() => {
 		if (!visible) {
 			setHasLoadedOnce(false);
@@ -37,7 +37,7 @@ export default function HabitDetailsContainer({
 	}, [visible]);
 
 	const handleEdit = (habitUuid: string) => {
-		onEdit?.(habitUuid);
+		router.push(`/edit-habit?habitUuid=${habitUuid}` as any);
 		onClose();
 	};
 
@@ -47,7 +47,6 @@ export default function HabitDetailsContainer({
 	};
 
 	if (loading || error || !habit) {
-		// Could show loading/error states here if needed
 		return null;
 	}
 

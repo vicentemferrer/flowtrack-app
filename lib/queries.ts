@@ -1,11 +1,5 @@
 import { SQLiteDatabase } from 'expo-sqlite';
-import {
-	CategoryOption,
-	CreateHabitInput,
-	RawHabit,
-	RawHabitWithCategory,
-	RawReminder
-} from './types';
+import { CategoryOption, RawHabit, RawHabitWithCategory, RawReminder } from './types';
 
 export async function nextRemindersQuery(db: SQLiteDatabase, maxReminders: number) {
 	const query = `
@@ -135,28 +129,6 @@ export async function getAllCategoriesQuery(db: SQLiteDatabase) {
 	const results = await db.getAllAsync<CategoryOption>(query);
 
 	return results;
-}
-
-export async function createHabitQuery(db: SQLiteDatabase, habit: CreateHabitInput) {
-	const query = `
-        INSERT INTO habit (uuid, title, description, target_value, target_unit, active_days, reminder_time, is_active, due_date, category_uuid)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
-
-	const params = [
-		habit.uuid,
-		habit.title,
-		habit.description || null,
-		habit.target_value || null,
-		habit.target_unit || null,
-		habit.active_days || '[1,2,3,4,5,6,7]',
-		habit.reminder_time || null,
-		habit.is_active ? 1 : 0,
-		habit.due_date || null,
-		habit.category_uuid || null
-	];
-
-	await db.runAsync(query, params);
 }
 
 export async function habitDetailsQuery(db: SQLiteDatabase, habitUuid: string) {

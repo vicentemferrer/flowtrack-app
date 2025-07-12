@@ -158,3 +158,21 @@ export async function createHabitQuery(db: SQLiteDatabase, habit: CreateHabitInp
 
 	await db.runAsync(query, params);
 }
+
+export async function habitDetailsQuery(db: SQLiteDatabase, habitUuid: string) {
+	const query = `
+		SELECT 
+			h.*,
+			c.name as category_name,
+			c.icon as category_icon,
+			c.uuid as category_uuid
+		FROM habit h
+		LEFT JOIN category c ON h.category_uuid = c.uuid
+		WHERE h.uuid = ?
+		LIMIT 1;
+	`;
+
+	const result = await db.getFirstAsync<RawHabitWithCategory>(query, habitUuid);
+
+	return result;
+}

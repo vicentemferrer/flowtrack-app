@@ -4,12 +4,15 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import CategoryDropdown from '@/components/CategoryDropdown';
 import InsetView from '@/components/core/InsetView';
 import FloatingActionButton from '@/components/FloatingActionButton';
+import HabitDetailsContainer from '@/components/HabitDetailsContainer';
 import InactiveHabitsDropdown from '@/components/InactiveHabitsDropdown';
 import useHabits from '@/hooks/useHabits';
 
 export default function HabitsScreen() {
 	const { habitsByCategory, inactiveHabits, loading, error, refreshHabits } = useHabits();
 	const [refreshing, setRefreshing] = useState(false);
+	const [selectedHabitUuid, setSelectedHabitUuid] = useState<string | null>(null);
+	const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
 	const handleRefresh = async () => {
 		setRefreshing(true);
@@ -18,8 +21,23 @@ export default function HabitsScreen() {
 	};
 
 	const handleHabitPress = (uuid: string) => {
-		// TODO: Implementar navegación al detalle del hábito
-		console.log('Habit pressed:', uuid);
+		setSelectedHabitUuid(uuid);
+		setDetailsModalVisible(true);
+	};
+
+	const handleCloseDetails = () => {
+		setDetailsModalVisible(false);
+		setSelectedHabitUuid(null);
+	};
+
+	const handleEditHabit = (habitUuid: string) => {
+		// TODO: Implementar navegación a editar hábito
+		console.log('Edit habit:', habitUuid);
+	};
+
+	const handleDeleteHabit = (habitUuid: string) => {
+		// TODO: Implementar eliminación de hábito
+		console.log('Delete habit:', habitUuid);
 	};
 
 	const handleCategorySeeAll = (categoryUuid: string) => {
@@ -99,7 +117,16 @@ export default function HabitsScreen() {
 					</>
 				)}
 			</ScrollView>
+
 			<FloatingActionButton href='/create-habit' />
+
+			<HabitDetailsContainer
+				habitUuid={selectedHabitUuid}
+				visible={detailsModalVisible}
+				onClose={handleCloseDetails}
+				onEdit={handleEditHabit}
+				onDelete={handleDeleteHabit}
+			/>
 		</InsetView>
 	);
 }

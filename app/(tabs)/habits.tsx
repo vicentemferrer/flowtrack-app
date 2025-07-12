@@ -34,7 +34,7 @@ export default function HabitsScreen() {
 
 	if (error) {
 		return (
-			<InsetView>
+			<InsetView customStyles={styles.container}>
 				<View style={styles.centerContainer}>
 					<Text style={styles.errorText}>Error: {error}</Text>
 				</View>
@@ -105,6 +105,9 @@ export default function HabitsScreen() {
 }
 
 const styles = StyleSheet.create({
+	container: {
+		position: 'relative'
+	},
 	header: {
 		paddingHorizontal: 16,
 		paddingTop: 8,

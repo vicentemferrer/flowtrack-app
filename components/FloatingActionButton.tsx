@@ -1,7 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, RelativePathString } from 'expo-router';
+import { Link } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
 	href: string;
@@ -9,15 +8,15 @@ interface Props {
 }
 
 export default function FloatingActionButton({ href, onPress }: Props) {
-	const insets = useSafeAreaInsets();
-
 	return (
-		<View style={[styles.container, { bottom: 88 + insets.bottom + 16 }]}>
-			<Link href={href as RelativePathString} asChild>
-				<Pressable
-					style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-					onPress={onPress}>
-					<Ionicons name='add' size={24} color='#FFFFFF' />
+		<View style={[styles.container, { bottom: 16 }]}>
+			<Link href={href as any} asChild>
+				<Pressable onPress={onPress}>
+					{({ pressed }) => (
+						<View style={[styles.button, pressed && styles.buttonPressed]}>
+							<Ionicons name='add' size={24} color='#FFFFFF' />
+						</View>
+					)}
 				</Pressable>
 			</Link>
 		</View>
@@ -27,8 +26,7 @@ export default function FloatingActionButton({ href, onPress }: Props) {
 const styles = StyleSheet.create({
 	container: {
 		position: 'absolute',
-		right: 20,
-		zIndex: 1000
+		right: 20
 	},
 	button: {
 		width: 56,

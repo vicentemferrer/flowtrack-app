@@ -13,6 +13,7 @@ import {
 	TextInput,
 	View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import InsetView from '@/components/core/InsetView';
 import CategorySelector from '@/components/form/CategorySelector';
@@ -21,8 +22,9 @@ import useHabitCreation from '@/hooks/useHabitCreation';
 import { ActiveDays, HabitFormData } from '@/lib/types';
 
 export default function CreateHabitScreen() {
-	const { categories, loadingCategories, creating, error, createHabit, validateForm } =
-		useHabitCreation();
+	const { categories, creating, error, createHabit, validateForm } = useHabitCreation();
+
+	const insets = useSafeAreaInsets();
 
 	const [formData, setFormData] = useState<HabitFormData>({
 		title: '',
@@ -146,7 +148,7 @@ export default function CreateHabitScreen() {
 	};
 
 	return (
-		<InsetView>
+		<InsetView customStyles={{ paddingBottom: insets.bottom }}>
 			<KeyboardAvoidingView
 				style={styles.container}
 				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

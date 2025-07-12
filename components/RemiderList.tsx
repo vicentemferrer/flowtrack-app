@@ -45,9 +45,12 @@ export default function RemindersList({
 			<Text style={styles.listTitle}>{title}</Text>
 			{reminders.length >= cardsQty && (
 				<Link href='/habits' asChild>
-					<Pressable
-						style={({ pressed }) => [styles.showAllButton, pressed && styles.showAllButtonPressed]}>
-						<Text style={styles.showAllText}>See all habits</Text>
+					<Pressable>
+						{({ pressed }) => (
+							<View style={[styles.showAllButton, pressed && styles.showAllButtonPressed]}>
+								<Text style={styles.showAllText}>See all habits</Text>
+							</View>
+						)}
 					</Pressable>
 				</Link>
 			)}

@@ -9,6 +9,13 @@ export default function RootLayout() {
 			<DBProvider dbName='flowtrack.db'>
 				<Stack>
 					<Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+					<Stack.Screen
+						name='create-habit'
+						options={{
+							presentation: 'modal',
+							headerShown: false
+						}}
+					/>
 				</Stack>
 			</DBProvider>
 		</SafeAreaProvider>

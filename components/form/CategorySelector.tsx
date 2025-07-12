@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -36,14 +36,14 @@ export default function CategorySelector({
 				<View style={styles.selectorContent}>
 					{selectedCategory ? (
 						<View style={styles.selectedCategory}>
-							<Ionicons name={selectedCategory.icon as any} size={20} color='#3A5BA0' />
+							<FontAwesome5 name={selectedCategory.icon as any} size={20} color='#3A5BA0' />
 							<Text style={styles.selectedCategoryText}>{selectedCategory.name}</Text>
 						</View>
 					) : (
 						<Text style={styles.placeholder}>{placeholder}</Text>
 					)}
 				</View>
-				<Ionicons name='chevron-down' size={20} color='#A0A0A0' />
+				<FontAwesome5 name='chevron-down' size={20} color='#A0A0A0' />
 			</Pressable>
 
 			{error && <Text style={styles.errorText}>{error}</Text>}
@@ -58,7 +58,7 @@ export default function CategorySelector({
 						<View style={styles.modalHeader}>
 							<Text style={styles.modalTitle}>Select Category</Text>
 							<Pressable style={styles.closeButton} onPress={() => setIsVisible(false)}>
-								<Ionicons name='close' size={24} color='#666666' />
+								<FontAwesome5 name='times' size={24} color='#666666' />
 							</Pressable>
 						</View>
 
@@ -67,10 +67,10 @@ export default function CategorySelector({
 								style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
 								onPress={() => handleSelect(null)}>
 								<View style={styles.categoryContent}>
-									<Ionicons name='remove-circle-outline' size={24} color='#A0A0A0' />
+									<FontAwesome5 name='circle' size={24} color='#A0A0A0' />
 									<Text style={styles.categoryText}>No Category</Text>
 								</View>
-								{!selectedCategory && <Ionicons name='checkmark' size={20} color='#3A5BA0' />}
+								{!selectedCategory && <FontAwesome5 name='check' size={20} color='#3A5BA0' />}
 							</Pressable>
 
 							{categories.map((category) => (
@@ -82,11 +82,11 @@ export default function CategorySelector({
 									]}
 									onPress={() => handleSelect(category)}>
 									<View style={styles.categoryContent}>
-										<Ionicons name={category.icon as any} size={24} color='#3A5BA0' />
+										<FontAwesome5 name={category.icon as any} size={24} color='#3A5BA0' />
 										<Text style={styles.categoryText}>{category.name}</Text>
 									</View>
 									{selectedCategory?.uuid === category.uuid && (
-										<Ionicons name='checkmark' size={20} color='#3A5BA0' />
+										<FontAwesome5 name='check' size={20} color='#3A5BA0' />
 									)}
 								</Pressable>
 							))}
@@ -155,7 +155,8 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
 		shadowRadius: 8,
-		elevation: 5
+		elevation: 5,
+		overflow: 'hidden'
 	},
 	modalHeader: {
 		flexDirection: 'row',

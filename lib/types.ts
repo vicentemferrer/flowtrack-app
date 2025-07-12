@@ -208,3 +208,31 @@ export interface DisplayReminder {
 	categoryName?: string;
 	targetText?: string;
 }
+
+// ===== CREATE HABIT TYPES =====
+
+export interface HabitFormData {
+	title: string;
+	description: string | null;
+	target_value: number | null;
+	target_unit: string | null;
+	active_days: ActiveDays;
+	reminder_time: TimeString | null;
+	due_date: DateString | null;
+	category_uuid: UUID | null;
+}
+
+export interface HabitFormErrors {
+	title?: string;
+	target_value?: string;
+	target_unit?: string;
+	due_date?: string;
+	category_uuid?: string;
+	general?: string;
+}
+
+export interface CategoryOption {
+	uuid: UUID;
+	name: string;
+	icon: string;
+}

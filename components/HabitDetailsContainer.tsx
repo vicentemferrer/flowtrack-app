@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
+import useHabitDelete from '@/hooks/useHabitDelete';
 import useHabitDetails from '@/hooks/useHabitDetails';
 import HabitDetailsModal from './HabitDetailsModal';
 
@@ -8,18 +9,12 @@ interface Props {
 	habitUuid: string | null;
 	visible: boolean;
 	onClose: () => void;
-	onEdit?: (habitUuid: string) => void;
 	onDelete?: (habitUuid: string) => void;
 }
 
-export default function HabitDetailsContainer({
-	habitUuid,
-	visible,
-	onClose,
-	onEdit,
-	onDelete
-}: Props) {
+export default function HabitDetailsContainer({ habitUuid, visible, onClose, onDelete }: Props) {
 	const { habit, loading, error, loadHabitDetails } = useHabitDetails();
+	const { deleting, error: deleteError, deleteHabit } = useHabitDelete();
 	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
 	useEffect(() => {
@@ -41,12 +36,15 @@ export default function HabitDetailsContainer({
 		onClose();
 	};
 
-	const handleDelete = (habitUuid: string) => {
-		onDelete?.(habitUuid);
-		onClose();
+	const handleDelete = async (habitUuid: string) => {
+		const success = await deleteHabit(habitUuid);
+		if (success) {
+			onDelete?.(habitUuid);
+			onClose();
+		}
 	};
 
-	if (loading || error || !habit) {
+	if (loading || deleting || error || deleteError || !habit) {
 		return null;
 	}
 

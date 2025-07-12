@@ -98,3 +98,15 @@ export async function updateHabitQuery(
 
 	return result;
 }
+
+export async function deleteHabitQuery(db: SQLiteDatabase, habitUuid: string) {
+	const query = `DELETE FROM habit WHERE uuid = ?;`;
+
+	const result = await db.runAsync(query, [habitUuid]);
+
+	if (result.changes === 0) {
+		throw new Error('Habit not found');
+	}
+
+	return result;
+}

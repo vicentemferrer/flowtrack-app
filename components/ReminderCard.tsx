@@ -1,4 +1,4 @@
-import { HabitReminderDisplay, ScheduleType } from '@/lib/types';
+import { DisplayReminder, ScheduleType } from '@/lib/types';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -29,7 +29,7 @@ const getScheduleTypeText = (scheduleType: ScheduleType): string => {
 };
 
 interface Props {
-	reminder: HabitReminderDisplay;
+	reminder: DisplayReminder;
 	onPress?: (uuid: string) => void;
 	variant?: 'reminder' | 'habit';
 }

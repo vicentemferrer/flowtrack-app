@@ -57,6 +57,7 @@ export default function HabitDetailsContainer({
 					onPress: async () => {
 						const success = await deleteHabit(habitUuid);
 						if (success) {
+							onClose();
 							await refreshHabits();
 						} else {
 							Alert.alert('Error', 'Failed to delete habit');
